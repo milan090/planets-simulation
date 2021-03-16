@@ -81,7 +81,7 @@ const createNewPlanet = (position, mass) => {
 
 // Adding bodies
 
-const sun = Bodies.circle(screen.width / 2, screen.height / 2, 20, {
+const sun = Bodies.circle(screen.width / 2, screen.height / 2, 30, {
   isStatic: true,
   mass: 50,
   render: {
@@ -110,7 +110,7 @@ Events.on(engine, "collisionEnd", ({ pairs }) => {
       const position = Vector.clone(bodyA.position);
       World.remove(world, bodyA);
       World.remove(world, bodyB);
-      createNewPlanet(position, bodyA.mass + bodyB.mass / 1.5);
+      createNewPlanet(position, (bodyA.mass + bodyB.mass) / 2);
       createNewPlanet();
     }
   });
