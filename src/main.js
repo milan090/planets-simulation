@@ -55,13 +55,13 @@ const gravityFunction = function (bodyA, bodyB) {
 };
 
 const createNewPlanet = (position, mass) => {
-  const randomMass = randomNumber(1, 6);
-  const randomVolume = randomNumber(1, 6);
+  const randomMass = randomNumber(2, 6);
+
   const body = Bodies.circle(
     position ? position.x : randomNumber(0, screen.width),
     position ? position.y : randomNumber(0, screen.height),
 
-    mass || randomVolume, // arbitary
+    mass || randomMass, // arbitary
     {
       mass: mass || randomMass,
       frictionAir: 0,
