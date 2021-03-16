@@ -39,7 +39,7 @@ world.gravity.scale = 0;
 // engine.timing.timeScale = 1.5;
 
 // Gravity
-const G = 6.67e-3;
+const G = 9e-3;
 
 const gravityFunction = function (bodyA, bodyB) {
   // use Newton's law of gravitation
@@ -52,6 +52,31 @@ const gravityFunction = function (bodyA, bodyB) {
   // to apply forces to both bodies
   Body.applyForce(bodyA, bodyA.position, Vector.neg(force));
   Body.applyForce(bodyB, bodyB.position, force);
+};
+
+const createNewPlanet = (position, mass) => {
+  const randomMass = randomNumber(1, 6);
+  const randomVolume = randomNumber(1, 6);
+  const body = Bodies.circle(
+    position ? position.x : randomNumber(0, screen.width),
+    position ? position.y : randomNumber(0, screen.height),
+
+    mass || randomVolume, // arbitary
+    {
+      mass: mass || randomMass,
+      frictionAir: 0,
+      friction: 0,
+      plugin: {
+        attractors: [gravityFunction],
+      },
+    }
+  );
+
+  Body.setVelocity(body, { x: Common.random(-1, 1), y: Common.random(-1, 1) });
+
+  World.add(world, body);
+
+  return body;
 };
 
 // Adding bodies
@@ -69,27 +94,27 @@ const sun = Bodies.circle(screen.width / 2, screen.height / 2, 20, {
 
 World.add(world, sun);
 
-for (let i = 0; i < 200; i++) {
-  const mass = randomNumber(1, 5);
-  const body = Bodies.circle(
-    randomNumber(0, screen.width),
-    randomNumber(0, screen.height),
-
-    mass, // arbitary
-    {
-      mass: mass,
-      frictionAir: 0,
-      friction: 0,
-      plugin: {
-        attractors: [gravityFunction],
-      },
-    }
-  );
-
-  Body.setVelocity(body, { x: Common.random(-1, 1), y: Common.random(-1, 1) });
-
-  World.add(world, body);
+for (let i = 0; i < 30; i++) {
+  createNewPlanet();
 }
+
+Events.on(engine, "collisionEnd", ({ pairs }) => {
+  pairs.forEach(({ bodyA, bodyB }) => {
+    if (bodyA === sun) {
+      World.remove(world, bodyB);
+      createNewPlanet();
+    } else if (bodyB === sun) {
+      World.remove(world, bodyA);
+      createNewPlanet();
+    } else {
+      const position = Vector.clone(bodyA.position);
+      World.remove(world, bodyA);
+      World.remove(world, bodyB);
+      createNewPlanet(position, bodyA.mass + bodyB.mass / 1.5);
+      createNewPlanet();
+    }
+  });
+});
 
 // Mouse
 const mouse = Mouse.create(render.canvas),
