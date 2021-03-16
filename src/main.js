@@ -39,7 +39,7 @@ world.gravity.scale = 0;
 // engine.timing.timeScale = 1.5;
 
 // Gravity
-const G = 9e-3;
+const G = 6.67e-3;
 
 const gravityFunction = function (bodyA, bodyB) {
   // use Newton's law of gravitation
